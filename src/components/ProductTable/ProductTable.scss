@@ -1,0 +1,37 @@
+.product-table {
+    width: 45%;
+
+    caption {
+        background-color: #95A5A6;
+        font-size: 1em;
+        font-weight: bold;
+        letter-spacing: 0.03em;
+        text-align: left;
+        text-transform: uppercase;
+    }
+
+    &_row {
+        cursor: pointer;
+
+        &_cell {
+            font-size: 0.875em;
+
+            &:first-child {
+                width: 80%;
+            }
+
+            &:last-child {
+                width: 20%;
+                text-align: center;
+            }
+        }
+
+        &:hover {
+            background-color: #faebd7;
+        }
+    }
+
+    @media screen and (max-width: 991px) {
+        width: 100%;
+    }
+}
