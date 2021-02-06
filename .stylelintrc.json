@@ -1,0 +1,69 @@
+{
+    "plugins": [
+      "stylelint-scss",
+      "stylelint-order"
+    ],
+    "rules": {
+      "scss/selector-no-redundant-nesting-selector": true,
+      "at-rule-empty-line-before": [
+        "always", {
+          "ignoreAtRules": [ "else" ]
+        }
+    ],
+      "block-opening-brace-space-before": "always",
+      "block-closing-brace-newline-after": [
+        "always", {
+          "ignoreAtRules": [ "if", "else" ]
+        }
+    ],
+    "at-rule-name-space-after": "always",
+    "rule-empty-line-before": "always",
+    "scss/at-else-closing-brace-newline-after": "always-last-in-chain",
+    "scss/at-else-closing-brace-space-after": "always-intermediate",
+    "scss/at-else-empty-line-before": "never",
+    "scss/at-if-closing-brace-newline-after": "always-last-in-chain",
+    "scss/at-if-closing-brace-space-after": "always-intermediate",
+    "order/order": [
+      "custom-properties",
+      "declarations"
+    ],
+    "order/properties-order" : [       
+      "position", "top", "right", "bottom", "left",
+      "z-index", 
+              
+      "display", "float", 
+      "flex-direction", "flex",
+      "grid-template", "grid-template-rows", "grid-template-columns",
+      "gap", "column-gap", "row-gap",
+      "flex-grow", "flex-wrap",
+      "justify-content", "align-items", "align-self",
+      "align-content",
+      "width", "max-width", "min-width",
+      "height", "max-height", "min-height",
+      "margin", "margin-top", "margin-right", "margin-bottom", "margin-left",
+      "padding", "padding-top", "padding-right", "padding-bottom", "padding-left",
+      "box-sizing",
+              
+      "font", "font-style", "font-size", "line-height",
+      "letter-spacing",
+      "font-family", "text-align", "color",
+      "text-decoration", "overflow", "word-break",
+              
+      "background",
+      "background-image",
+      "background-color", "border", 
+      "border-top", "border-right", "border-bottom",
+      "border-left",
+      "border-color",
+      "border-radius",
+      "box-shadow",
+      "outline", "outline-style", "outline-color",
+      "opacity", "text-transform", "resize",
+              
+      "transition", "transform", "animation", "animation-name", "animation-duration",
+              
+      "content", "cursor", "will-change"
+    ]
+  }
+}
+  

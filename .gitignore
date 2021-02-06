@@ -1,0 +1,4 @@
+dist
+debug.log
+.eslintcache
+node_modules
