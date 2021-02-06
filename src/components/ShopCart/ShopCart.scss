@@ -1,0 +1,30 @@
+.shop-cart-table {
+    width: 75%;
+
+    thead th {
+        text-align: left;
+    }
+
+    .table_row_cell {
+        &--name {
+            width: 70%;
+        }
+
+        &--price {
+            width: 18%;
+        }
+
+        &--quantity input {
+            width: 95px;
+        }
+
+        &--remove button {
+            width: 80px;
+            height: 30px;
+        }
+    }
+
+    tfoot td:first-child {
+        text-align: end;
+    }
+}
