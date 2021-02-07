@@ -69,8 +69,7 @@ const App = () => {
 
     const [status, setStatus] = useState(APP_META_STATUSES.GETTING); // Application management statuses
 
-    const getActualData = () => {
-        // console.log('reqStatus: ', reqStatus);
+    function getActualData() {
         fetch('/api')
             .then((res) => res.json())
             .then((data) => {
@@ -85,7 +84,7 @@ const App = () => {
             .finally(() => {
                 setTimeout(getActualData, APP_REQUEST_INTERVAL); // Send new request
             });
-    };
+    }
 
     function postActualData(data) {
         fetch('/api', {
