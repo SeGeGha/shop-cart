@@ -24,6 +24,14 @@
                 width: 20%;
                 text-align: center;
             }
+
+            &--red-highlight {
+                color: red;
+            }
+
+            &--green-highlight {
+                color: green;
+            }
         }
 
         &:hover {
