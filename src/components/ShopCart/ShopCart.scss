@@ -5,6 +5,10 @@
 
     .table {
         &_row_ceil {
+            &--name {
+                width: 60%;
+            }
+
             &--quantity {
                 width: 94px;
 
@@ -25,13 +29,11 @@
                 }
             }
         }
-
-        tfoot td:first-child {
-            text-align: end;
-        }
-
     }
 
+    tfoot td:first-child {
+        text-align: end;
+    }
 
     @media screen and (max-width: 991px) {
         width: 90%;
