@@ -11,7 +11,7 @@ const ProductTable = ({ name, products, addProductToCart }) => {
 
     return (
         <table className="product-table">
-            <caption>{name}</caption>
+            <caption className="product-table_caption">{name}</caption>
 
             <tbody onClick={handleClick} onKeyPress={handleClick} role="presentation">
                 {products.map((product) => (

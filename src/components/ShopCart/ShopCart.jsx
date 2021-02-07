@@ -18,24 +18,24 @@ const ShopCart = ({ list, removeProductFromCart, changeProductQuantity }) => {
 
     if (list.length) {
         return (
-            <table className="shop-cart-table">
+            <table className="shop-cart table">
                 <thead>
                     <tr className="table_row">
-                        <th className="table_row_cell table_row_cell--name">
+                        <th className="table_row_ceil table_row_ceil--name">
                             Наименование товара и описание
                         </th>
-                        <th className="table_row_cell table_row_cell--quantity">
+                        <th className="table_row_ceil table_row_ceil--quantity">
                             Количество
                         </th>
-                        <th className="table_row_cell table_row_cell--price" colSpan="2">
+                        <th className="table_row_ceil table_row_ceil--price" colSpan="2">
                             Цена
                         </th>
                     </tr>
                 </thead>
                 <tfoot>
                     <tr className="table_row">
-                        <td className="table_row_cell" colSpan="2">Общая стоимость:</td>
-                        <td className="table_row_cell" colSpan="2">
+                        <td className="table_row_ceil" colSpan="2">Общая стоимость:</td>
+                        <td className="table_row_ceil" colSpan="2">
                             {list.reduce((totalCost, product) => +(totalCost + product.Pl * product.C).toFixed(2), 0)}
                             {' '}
                             руб
@@ -44,19 +44,19 @@ const ShopCart = ({ list, removeProductFromCart, changeProductQuantity }) => {
                 </tfoot>
                 <tbody>
                     {list.map((product) => (
-                        <tr key={product.T} id={product.T}>
-                            <td className="table_row_cell table_row_cell--name">
+                        <tr className="table_row" key={product.T} id={product.T}>
+                            <td className="table_row_ceil table_row_ceil--name">
                                 {product.N}
                             </td>
-                            <td className="table_row_cell table_row_cell--quantity">
+                            <td className="table_row_ceil table_row_ceil--quantity">
                                 <input type="number" value={product.Pl} min={1} onChange={handleQuantityChange} />
                             </td>
-                            <td className="table_row_cell table_row_cell--price">
+                            <td className="table_row_ceil table_row_ceil--price">
                                 {product.C}
                                 {' '}
                                 руб/шт
                             </td>
-                            <td className="table_row_cell table_row_cell--remove">
+                            <td className="table_row_ceil table_row_ceil--remove">
                                 <button type="button" onClick={handleRemoveClick}>
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="svelte-c8tyih">
                                         <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zm2.46-7.12l1.41-1.41L12

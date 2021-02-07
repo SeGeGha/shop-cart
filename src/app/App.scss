@@ -30,6 +30,10 @@ table {
     margin: 0 10px;
     border-spacing: 0 1.5em;
 
+    thead th {
+        text-align: left;
+    }
+
     >caption,
     th,
     td {
