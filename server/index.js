@@ -19,7 +19,7 @@ app.get('/api', (req, res) => {
     res.send(dbData);
 });
 
-app.post('/api/shop-cart', jsonParser, (req, res) => {
+app.post('/api', jsonParser, (req, res) => {
     if (!req.body) {
         return res.sendStatus(400);
     }

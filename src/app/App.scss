@@ -1,3 +1,5 @@
+$padding: 10px;
+
 html {
     margin-right: calc(-1 * (100vw - 100%));
     overflow-x: hidden;
@@ -12,12 +14,16 @@ body {
 section {
     margin: 0 auto;
     width: 70%;
-    padding: 10px 0;
+    padding: $padding 0;
     min-width: 320px;
     display: flex;
     justify-content: space-evenly;
     align-items: flex-start;
     flex-wrap: wrap;
+}
+
+section#shop-cart {
+    width: 90%;
 }
 
 table {
@@ -28,7 +34,7 @@ table {
     th,
     td {
         border-radius: 3px;
-        padding: 25px 15px;
+        padding: ($padding * 2.5) ($padding * 1.5);
     }
 
     tfoot>tr,
@@ -39,7 +45,7 @@ table {
 }
 
 div.exchange-rate-field-wrapper {
-    padding: 10px;
+    padding: $padding;
     width: 100%;
     text-align: center;
 }
@@ -47,5 +53,14 @@ div.exchange-rate-field-wrapper {
 input[type="number"] {
     width: 50px;
     height: 24px;
-    padding: 0 10px;
+    padding: 0 $padding;
+}
+
+button {
+    margin: 0;
+    padding: 0;
+    height: 30px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
 }

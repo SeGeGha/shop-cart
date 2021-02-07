@@ -1,10 +1,10 @@
 const APP_META_STATUSES = {
-    LOADING: 'loading data',
+    GETTING: 'loading data',
     LOADED: 'data loaded',
-    ERROR: 'fetch error',
+    LOADING_ERROR: 'fetch error',
 };
 
-const APP_REQUEST_INTERVAL = 15000;
+const APP_REQUEST_INTERVAL = 1000;
 
 const APP_PRICE_RATE_RANGE = {
     MIN: 20,

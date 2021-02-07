@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, {
+    useState, useEffect, useReducer, useMemo,
+} from 'react';
 
 import ProductTable from '../components/ProductTable/ProductTable';
 import ShopCart from '../components/ShopCart/ShopCart';
@@ -8,71 +10,103 @@ import { getNewExchangeRate } from '../utils/numberRandomizer';
 import convertCurrency from '../utils/currencyConverter';
 
 import { APP_META_STATUSES, APP_REQUEST_INTERVAL } from '../constants/appConfig';
-import SHOP_CART_ACTIONS from '../constants/actions';
+import PRODUCTS_LIST_ACTIONS from '../constants/actions';
 
 import './App.scss';
 
-const App = () => {
-    const [status, setStatus] = useState(APP_META_STATUSES.LOADING); // Application management statuses
-    const [exchangeRate, setExchangeRate] = useState(1); // $/rub exchange rate, default = 1
-    const [productGroupsStore, setProductGroupsStore] = useState({}); // data from names.json
-    const [productsList, setProductsList] = useState([]); // data.Value.Goods from data.json
+function reducer(state, action) {
+    switch (action.type) {
+        case PRODUCTS_LIST_ACTIONS.ADD_TO_CART:
+            return state.map((product) => (product.T === action.product.id ? { ...product, B: true, Pl: product.Pl || 1 } : product));
+        case PRODUCTS_LIST_ACTIONS.REMOVE_FROM_CART:
+            return state.map((product) => (product.T === action.product.id ? { ...product, B: false, Pl: null } : product));
+        case PRODUCTS_LIST_ACTIONS.CHANGE_QUANTITY_IN_CART:
+            return state.map((product) => {
+                if (product.T === action.product.id && product.P >= action.product.quantity) {
+                    return {
+                        ...product,
+                        Pl: action.product.quantity,
+                    };
+                }
 
-    const updateUsdRate = ({ target }) => { setExchangeRate(+target.value); };
-
-    // TODO: FIX
-    function operateShopCart(action, productId, value) {
-        setProductsList((list) => {
-            const newList = [...list];
-            const idx = newList.findIndex((item) => item.T === productId);
-
-            switch (action) {
-                case SHOP_CART_ACTIONS.ADD_PRODUCT:
-                    if (!newList[idx].B) { // If the product isn't added to shop cart
-                        newList[idx].B = true; // .B = true -> product added to the cart
-                        newList[idx].Pl = 1; // .Pl = 1 -> initially product quantity 1
-                    }
-                    break;
-                case SHOP_CART_ACTIONS.REMOVE_PRODUCT:
-                    newList[idx].B = false; // .B = false -> product NOT added to the cart
-                    delete newList[idx].Pl; // .Pl = null -> reset quantity
-                    break;
-                case SHOP_CART_ACTIONS.CHANGE_PRODUCT_QUANTITY:
-                    newList[idx].Pl = (newList[idx].P < value) ? newList[idx].P : value; // Quantity must be less than P
-                    break;
-                default:
-                    break;
-            }
-
-            fetch('/api/shop-cart', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(newList),
+                return product;
             });
-
-            return newList;
-        });
+        case PRODUCTS_LIST_ACTIONS.UPDATE:
+            return action.state;
+        default:
+            return state;
     }
+}
 
-    function getActualData() {
+const App = () => {
+    const [productGroupsStore, setProductGroupsStore] = useState({}); // data from names.json
+    const [productsList, dispatchProductsList] = useReducer(reducer, []); // data.Value.Goods from data.json
+    const [exchangeRate, setExchangeRate] = useState(1); // $/rub exchange rate, default = 1
+    // combine products into groups
+    const productTable = useMemo(() => {
+        const groups = productsList.reduce((acc, product) => {
+            const groupName = productGroupsStore[product.G].G;
+            const productsListWithAddition = {
+                ...product,
+                N: productGroupsStore[product.G].B[product.T].N,
+                C: convertCurrency(product.C, exchangeRate),
+            };
+
+            acc[groupName] = (Array.isArray(acc[groupName])) ? acc[groupName].concat(productsListWithAddition) : [productsListWithAddition];
+
+            return acc;
+        }, {});
+
+        // Return arr [groupName, [product1, product2...]]
+        return Object.entries(groups);
+    }, [productsList, productGroupsStore, exchangeRate]);
+    // filter products into cart
+    const shopList = useMemo(() => productsList.filter((product) => product.B).map((product) => ({
+        ...product,
+        N: productGroupsStore[product.G].B[product.T].N,
+        C: convertCurrency(product.C, exchangeRate),
+    })), [productsList, productGroupsStore, exchangeRate]);
+
+    const [status, setStatus] = useState(APP_META_STATUSES.GETTING); // Application management statuses
+
+    const getActualData = () => {
+        // console.log('reqStatus: ', reqStatus);
         fetch('/api')
             .then((res) => res.json())
             .then((data) => {
-                setStatus(APP_META_STATUSES.LOADED); // Update app status - 'data loaded'
-                setProductGroupsStore(data[1]); // Save data from names.json - data[1]
-                setProductsList(data[0].Value.Goods);// Save data from data.json - data[0]
+                setProductGroupsStore(data[1]); // Save data from names.json
+                dispatchProductsList({ type: PRODUCTS_LIST_ACTIONS.UPDATE, state: data[0].Value.Goods });// Save data from data.json
                 setExchangeRate(getNewExchangeRate()); // Update rate $ / rub
-
-                // setTimeout(getActualData, APP_REQUEST_INTERVAL);
+                setStatus(APP_META_STATUSES.LOADED); // Update app status - 'data loaded'
             })
-            .catch(() => { setStatus(APP_META_STATUSES.ERROR); });
+            .catch(() => {
+                setStatus((prevStatus) => (prevStatus === APP_META_STATUSES.GETTING ? APP_META_STATUSES.LOADING_ERROR : prevStatus));
+            })
+            .finally(() => {
+                setTimeout(getActualData, APP_REQUEST_INTERVAL); // Send new request
+            });
+    };
+
+    function postActualData(data) {
+        fetch('/api', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
     }
 
-    useEffect(getActualData, []); // After app mounting we send data request
+    useEffect(() => getActualData(), []); // After app mounting we send data request
 
-    if (status === APP_META_STATUSES.LOADING) {
+    // Save updated data
+    useEffect(() => {
+        if (productsList.length && status === APP_META_STATUSES.LOADED) {
+            postActualData(productsList);
+        }
+    }, [productsList]);
+
+    if (status === APP_META_STATUSES.GETTING) {
         return <h1>Loading</h1>;
     } if (status === APP_META_STATUSES.LOADED) {
         return (
@@ -81,46 +115,41 @@ const App = () => {
                     <div className="exchange-rate-field-wrapper">
                         <label htmlFor="exchange-rate-field">
                             Текущий курс доллара к рублю:
-                            <input type="number" value={exchangeRate} min={1} id="exchange-rate-field" onChange={updateUsdRate} />
+                            <input
+                                id="exchange-rate-field"
+                                type="number"
+                                value={exchangeRate}
+                                min={1}
+                                onChange={({ target }) => setExchangeRate(+target.value)}
+                            />
                         </label>
                     </div>
-                    {Object.entries(productsList.reduce((acc, product) => {
-                        const productGroupName = productGroupsStore[product.G].G;
-                        const obj = {
-                            ...product,
-                            N: productGroupsStore[product.G].B[product.T].N,
-                            C: convertCurrency(product.C, exchangeRate),
-                        };
-
-                        acc[productGroupName] = (Array.isArray(acc[productGroupName]))
-                            ? acc[productGroupName].concat(obj)
-                            : [obj];
-
-                        return acc;
-                    }, {})).map(([groupName, products]) => (
+                    {productTable.map(([groupName, products]) => (
                         <ProductTable
                             key={groupName}
                             name={groupName}
                             products={products}
-                            addProductToCart={operateShopCart}
+                            addProductToCart={(product) => dispatchProductsList({
+                                type: PRODUCTS_LIST_ACTIONS.ADD_TO_CART, product,
+                            })}
                         />
                     ))}
                 </section>
                 <section id="shop-cart">
                     <ShopCart
-                        list={productsList.filter((product) => product.B).map((product) => ({
-                            ...product,
-                            N: productGroupsStore[product.G].B[product.T].N,
-                            C: convertCurrency(product.C, exchangeRate),
-                        }))}
-                        operateShopCart={operateShopCart}
+                        list={shopList}
+                        removeProductFromCart={(product) => dispatchProductsList({
+                            type: PRODUCTS_LIST_ACTIONS.REMOVE_FROM_CART, product,
+                        })}
+                        changeProductQuantity={(product) => dispatchProductsList({
+                            type: PRODUCTS_LIST_ACTIONS.CHANGE_QUANTITY_IN_CART, product,
+                        })}
                     />
                 </section>
             </>
         );
     }
 
-    // TODO: FIX IF ITS UPDATE DATE FAIL
     return <ErrorNotification />;
 };
 

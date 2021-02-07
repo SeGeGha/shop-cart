@@ -1,7 +1,8 @@
-const SHOP_CART_ACTIONS = {
-    ADD_PRODUCT: 'addProductToCart',
-    REMOVE_PRODUCT: 'removeProductFromCard',
-    CHANGE_PRODUCT_QUANTITY: 'changeProductQuantity',
+const PRODUCTS_LIST_ACTIONS = {
+    ADD_TO_CART: 'addProductToCart',
+    REMOVE_FROM_CART: 'removeProductFromCard',
+    CHANGE_QUANTITY_IN_CART: 'changeProductQuantity',
+    UPDATE: 'updateProductsList',
 };
 
-export default SHOP_CART_ACTIONS;
+export default PRODUCTS_LIST_ACTIONS;
