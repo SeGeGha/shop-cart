@@ -34,7 +34,23 @@
     }
 
     @media screen and (max-width: 991px) {
-        width: 100%;
+        width: 90%;
         min-width: 300px;
+
+        thead {
+            display: none;
+        }
+
+        tr {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+
+            .table_row_cell--name {
+                width: 100%;
+            }
+        }
     }
 }
