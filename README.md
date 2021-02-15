@@ -2,7 +2,7 @@
 
 ### Developed on Chrome.
 
-### [Heroku Deploy](https://softcorp-cart.herokuapp.com/)
+### [Heroku Deploy](https://sega-shop-cart.herokuapp.com/)
 
 ### _Basic scriptst:_
 - ***npm run start*** - start dev-server;
