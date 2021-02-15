@@ -39,10 +39,10 @@ function reducer(state, action) {
 }
 
 const App = () => {
-    const [productGroupsStore, setProductGroupsStore] = useState({}); // data from names.json
-    const [productsList, dispatchProductsList] = useReducer(reducer, []); // data.Value.Goods from data.json
-    const [exchangeRate, setExchangeRate] = useState(1); // $/rub exchange rate, default = 1
-    // combine products into groups
+    const [productGroupsStore, setProductGroupsStore] = useState({});
+    const [productsList, dispatchProductsList] = useReducer(reducer, []);
+    const [exchangeRate, setExchangeRate] = useState(1);
+
     const productTable = useMemo(() => {
         const groups = productsList.reduce((acc, product) => {
             const groupName = productGroupsStore[product.G].G;
@@ -57,32 +57,30 @@ const App = () => {
             return acc;
         }, {});
 
-        // Return arr [groupName, [product1, product2...]]
         return Object.entries(groups);
     }, [productsList, productGroupsStore, exchangeRate]);
-    // filter products into cart
+
     const shopList = useMemo(() => productsList.filter((product) => product.B).map((product) => ({
         ...product,
         N: productGroupsStore[product.G].B[product.T].N,
         C: convertCurrency(product.C, exchangeRate),
     })), [productsList, productGroupsStore, exchangeRate]);
 
-    const [status, setStatus] = useState(APP_META_STATUSES.GETTING); // Application management statuses
+    const [status, setStatus] = useState(APP_META_STATUSES.GETTING);
 
     function getActualData() {
         fetch('/api')
             .then((res) => res.json())
             .then((data) => {
-                setProductGroupsStore(data[1]); // Save data from names.json
-                dispatchProductsList({ type: PRODUCTS_LIST_ACTIONS.UPDATE, state: data[0].Value.Goods });// Save data from data.json
-                setExchangeRate(getNewExchangeRate()); // Update rate $ / rub
-                setStatus(APP_META_STATUSES.LOADED); // Update app status - 'data loaded'
+                setProductGroupsStore(data[1]);
+                dispatchProductsList({ type: PRODUCTS_LIST_ACTIONS.UPDATE, state: data[0].Value.Goods });
+                setExchangeRate(getNewExchangeRate());
+                setStatus(APP_META_STATUSES.LOADED);
             })
             .catch(() => {
                 setStatus((prevStatus) => (prevStatus === APP_META_STATUSES.GETTING ? APP_META_STATUSES.LOADING_ERROR : prevStatus));
-            })
-            .finally(() => {
-                setTimeout(getActualData, APP_REQUEST_INTERVAL); // Send new request
+
+                setTimeout(getActualData, APP_REQUEST_INTERVAL);
             });
     }
 
@@ -96,9 +94,8 @@ const App = () => {
         });
     }
 
-    useEffect(() => getActualData(), []); // After app mounting we send data request
+    useEffect(() => getActualData(), []);
 
-    // Save updated data
     useEffect(() => {
         if (productsList.length && status === APP_META_STATUSES.LOADED) {
             postActualData(productsList);
